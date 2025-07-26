@@ -50,10 +50,10 @@ end
 
 function _move()
 
-    if (btn(0) and btn(2) or btn(3)) then
-        plr.speed = sqrt(2)/2
-    elseif (btn(1) and btn(2) or btn(3)) then
-        plr.speed = sqrt(2)/2
+    if (btn(0) and btn(2) or btn(0) and btn(3)) then
+        plr.speed = sqrt(2)/2 * plr.maxSpeed
+    elseif (btn(1) and btn(2) or btn(1) and btn(3)) then
+        plr.speed = sqrt(2)/2 * plr.maxSpeed
     else
         plr.speed = plr.maxSpeed
     end
