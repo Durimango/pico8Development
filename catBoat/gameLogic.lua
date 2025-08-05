@@ -1,9 +1,55 @@
+---------------------------debugging----------
+-- echoes collection
+echoes = {}
+
+-- store a value to be printed
+function echo(val)
+  add(echoes,tostr(val))
+end
+
+-- print all echoes
+-- ...opt: c (text color, default: latest)
+-- ...opt: x,y (print coords)
+function print_echoes(c, x, y)
+	local cx, cy, cc = cam.X, cam.Y, 0  --pen_x, pen_y, pen_color
+
+	--set text position and color
+	cursor(x or cx, y or cy, c or cc)
+	for i=1,#echoes do
+		print(tostr(echoes[i]))
+	end
+
+	--erase all echoes
+	echoes = {}
+end
+-------------------------------------------------
+
+-- optional: label (header caption)
+function echo_tbl(tbl, label)
+	if type(tbl) == "table" then
+		add(echoes,"--")
+		add(echoes,"[ " .. (label or "unlabeled") .. " ]")
+		add(echoes,"")
+		--
+		for k,v in pairs(tbl) do
+			add(echoes,("+ " .. k .. ": " .. tostr(v)))
+		end
+		--
+		add(echoes,"--")
+	end
+end
+
+
+
 function _init()
 
     palt(0,false)
     palt(11,true)
     _initPlayer()
     _initEquipment()
+
+--fish table
+    fishes = {}
 end
 
 function _update()
@@ -12,6 +58,18 @@ function _update()
     _updatePlrPosition()
     _updateCastPosition()
     _castEquipment()
+    _fishSpawner()
+
+--fish culling
+    --foreach(fishes, _fishDeleter)
+
+--fish table update
+    for fish in all(fishes) do
+        fish:update()
+        if fish.kill == true then
+            fish:delete()
+        end
+    end
 
     --camera object--
 
@@ -19,20 +77,25 @@ function _update()
         X=plr.X-55,
         Y=plr.Y-55
     }
+
+    echo_tbl(fishes[1])
 end
 
 function _draw()
     cls(12)
     camera(cam.X,cam.Y)
-
-    --print debugger--
-    print(stat(7),cam.X,cam.Y)
-
     
-    spr(16, 32, 15)
+    --fish table update
+    for fish in all(fishes) do
+        fish:draw()
+    end
+
+    --spr(16, 32, 15)
     _drawOrder()
     
-
+--debugging
+    --print(debugger.X, cam.X, cam.Y)
+    print_echoes()
 end
 
 
@@ -50,6 +113,13 @@ function _initPlayer()
         speed = 1,
         maxSpeed = 1,
         position = 0
+    }
+
+--camera object--
+
+    cam = {
+        X=plr.X-55,
+        Y=plr.Y-55
     }
 
 end
@@ -168,5 +238,90 @@ function _updateCastPosition()
 end
 
 function _miniGame()
-
+    if(fish.action==true)then
+        
+    end
 end
+
+function _fishSpawner()
+
+    fishRandSign = {-1,1}
+
+
+    while #fishes < 15 do
+
+--potential locations for a fish in the Y axis
+        fishY = {
+            cam.Y-8-(flr(rnd(101))), cam.Y+127+(flr(rnd(101))), plr.Y+(rnd(fishRandSign)*flr(rnd(101))), plr.Y+(rnd(fishRandSign)*flr(rnd(101)))
+        }
+
+        fishGenY = rnd(fishY)
+
+--potential locations for a fish in the X axis
+        fishX = {
+            cam.X-8-(flr(rnd(101))), cam.X+127+(flr(rnd(101)))
+        }
+
+        fishXOther = plr.X+(rnd(fishRandSign)*flr(rnd(101)))
+        
+        if(fishGenY == fishY[1] or fishGenY == fishY[2])then
+            fishGenX = fishXOther
+        else
+            fishGenX = rnd(fishX)
+        end
+
+        add(fishes, fish:new({
+        Y=fishGenY,
+        X=fishGenX
+        }))
+    end
+end
+
+function _fishDeleter()
+    i=1
+    deli(fishes, i)
+    i+=1
+    if(i>#fishes)then
+        i=1
+    end
+   
+end
+
+--fish object and constructor
+
+fish = {
+    sp=16,
+    X=nil,
+    Y=nil,
+    action = false,
+    delete = false,
+
+    new=function(self,tbl)
+        tbl=tbl or {}
+        setmetatable(tbl,{
+            __index=self
+        })
+        return tbl
+    end,
+
+    update=function(self)
+        
+        if equipment.draw==true and equipment.X >= self.X and equipment.X <= self.X+8 and equipment.Y >= self.Y and equipment.Y <= self.Y+8 then
+            self.action = true
+        else
+            self.action = false
+        end
+
+        if flr(self.X)+200==flr(plr.X) or flr(self.Y)+200==flr(plr.Y) or flr(self.X)-200==flr(plr.X) or flr(self.Y)-200==flr(plr.Y) then
+            self.kill = true
+        end
+    end,
+
+    draw=function(self)
+        spr(self.sp,self.X,self.Y)
+    end,
+
+    delete=function(self)
+            del(fishes, self)
+    end
+        }
