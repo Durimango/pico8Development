@@ -42,14 +42,17 @@ end
 
 
 function _init()
-
+--object oriented programming reference - don't delete
+    global=_ENV
+--changing transparency for green screen
     palt(0,false)
     palt(11,true)
-    _initPlayer()
+
+
     _initEquipment()
 
 --fish table
-    fishes = {}
+    fishes = {fishTest}
 end
 
 function _update()
@@ -60,15 +63,10 @@ function _update()
     _castEquipment()
     _fishSpawner()
 
---fish culling
-    --foreach(fishes, _fishDeleter)
-
 --fish table update
     for fish in all(fishes) do
         fish:update()
-        if fish.kill == true then
-            fish:delete()
-        end
+        fish:destructor()
     end
 
     --camera object--
@@ -238,7 +236,7 @@ function _updateCastPosition()
 end
 
 function _miniGame()
-    if(fish.action==true)then
+    if(fish.state==true)then
         
     end
 end
@@ -270,58 +268,88 @@ function _fishSpawner()
             fishGenX = rnd(fishX)
         end
 
-        add(fishes, fish:new({
+        add(fishes, fish:constructor({
         Y=fishGenY,
         X=fishGenX
         }))
     end
 end
 
-function _fishDeleter()
-    i=1
-    deli(fishes, i)
-    i+=1
-    if(i>#fishes)then
-        i=1
-    end
-   
-end
+--all classes
 
---fish object and constructor
-
-fish = {
-    sp=16,
+class=setmetatable({
+    sp=nil,
     X=nil,
     Y=nil,
-    action = false,
+    state=nil,
+
+    constructor=function(_ENV, tbl)
+    tbl=tbl or {}
+    setmetatable(tbl,{
+        __index=_ENV
+    })
+    return tbl
+    end,
+
+    destructor=function(_ENV, tbl)
+        del(tbl, _ENV)
+    end,
+
+    update=function(_ENV)
+    end,
+
+    draw=function(_ENV)
+    end
+},{__index=_ENV})
+
+plr=class:constructor{
+        sp=32,
+        X=0,
+        Y=0,
+        flipX = false,
+        flipY = false,
+        speedModifier = 1,
+        speed = 1,
+        maxSpeed = 1,
+        position = 0,
+
+        update=function(_ENV)
+            
+        end
+}
+
+fish=class:constructor({
+    sp=16,
+    state = false,
     delete = false,
 
-    new=function(self,tbl)
-        tbl=tbl or {}
-        setmetatable(tbl,{
-            __index=self
-        })
-        return tbl
-    end,
-
-    update=function(self)
+    update=function(_ENV)
         
-        if equipment.draw==true and equipment.X >= self.X and equipment.X <= self.X+8 and equipment.Y >= self.Y and equipment.Y <= self.Y+8 then
-            self.action = true
+        if equipment.draw==true and equipment.X >= X and equipment.X <= X+8 and equipment.Y >= Y and equipment.Y <= Y+8 then
+            state = true
         else
-            self.action = false
+            state = false
         end
 
-        if flr(self.X)+200==flr(plr.X) or flr(self.Y)+200==flr(plr.Y) or flr(self.X)-200==flr(plr.X) or flr(self.Y)-200==flr(plr.Y) then
-            self.kill = true
+        if flr(X)+200==flr(plr.X) or flr(Y)+200==flr(plr.Y) or flr(X)-200==flr(plr.X) or flr(Y)-200==flr(plr.Y) then
+            delete = true
         end
     end,
 
-    draw=function(self)
-        spr(self.sp,self.X,self.Y)
+    draw=function(_ENV)
+        spr(sp,X,Y)
     end,
 
-    delete=function(self)
-            del(fishes, self)
+    destructor=function(_ENV)
+        if delete == true then
+            del(fishes, _ENV)
+        end
     end
-        }
+})
+
+--all premade objects from those classes
+
+fishTest={X=10,Y=10,}
+setmetatable(fishTest,{
+    __index=fish
+})
