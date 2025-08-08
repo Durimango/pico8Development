@@ -5,8 +5,6 @@ class=setmetatable({
     sp=nil,
     X=nil,
     Y=nil,
-    state=nil,
-    hitBoxOn = true,
 
     constructor=function(_ENV, tbl)
     tbl=tbl or {}
@@ -36,37 +34,39 @@ plrs=class:constructor{
     X=0,
     Y=0,
     flipX = false,
-    flipY = false,
-    hitBoxOn = true,
     speedModifier = 1,
     speed = 1,
     maxSpeed = 1,
     position = 0,
+    state = 0,
+
 
     update=function(_ENV)
 --all movement logic
-        if (btn(0) and btn(2) or btn(0) and btn(3)) then
-            speed = sqrt(2)/2 * maxSpeed * speedModifier
-        elseif (btn(1) and btn(2) or btn(1) and btn(3)) then
-            speed = sqrt(2)/2 * maxSpeed * speedModifier
-        else
-            speed = maxSpeed * speedModifier
-        end
+        if state==0 then
+            if (btn(0) and btn(2) or btn(0) and btn(3)) then
+                speed = sqrt(2)/2 * maxSpeed * speedModifier
+            elseif (btn(1) and btn(2) or btn(1) and btn(3)) then
+                speed = sqrt(2)/2 * maxSpeed * speedModifier
+            else
+                speed = maxSpeed * speedModifier
+            end
 
-        if (not btn(1) and btn(0)) then
-            flipX=true
-            X-=speed
-        elseif (not btn(0) and btn(1)) then
-            flipX=false
-            X+=speed
-        end
-        
-        if (not btn(3) and btn(2)) then
-            sp=34
-            Y-=speed
-        elseif (not btn(2) and btn(3)) then
-            sp=32
-            Y+=speed
+            if (not btn(1) and btn(0)) then
+                flipX=true
+                X-=speed
+            elseif (not btn(0) and btn(1)) then
+                flipX=false
+                X+=speed
+            end
+            
+            if (not btn(3) and btn(2)) then
+                sp=34
+                Y-=speed
+            elseif (not btn(2) and btn(3)) then
+                sp=32
+                Y+=speed
+            end
         end
 
 --player positon logic
@@ -107,15 +107,15 @@ equipment=class:constructor{
     sp=36,
     flipX = false,
     flipY = false,
-    state = false,
+    state = 0,
 
     update=function(_ENV)
 --turn on equipment and reduce speed
-        if (state==false and btnp(4)) then
-            state=true
+        if (state==0 and btnp(4)) then
+            state=1
             plr.speedModifier = .5
-        elseif (state == true and btnp(4)) then
-            state = false
+        elseif (state==1 and btnp(4)) then
+            state = 0
             plr.speedModifier = 1
         end
 
@@ -147,7 +147,7 @@ equipment=class:constructor{
     end,
 
     draw=function (_ENV)
-        if (state==true) then
+        if (state==1) then
             rect(hitBox[1],hitBox[3],hitBox[2],hitBox[4], 8)
             spr(sp,X,Y,1,1,flipX, flipY)
         end
@@ -164,10 +164,10 @@ fish=class:constructor({
 --hitbox updater
         hitBox = {X-1,X+8,Y-1,Y+8}
 
-        if equip.state==true and _collisionDetection(equip.hitBox, hitBox)==true then
-            action = true
-        else
-            action = false
+        if equip.state==1 and _collisionDetection(equip.hitBox, hitBox)==true then
+            _miniGame()
+        elseif equip.state==0 and _collisionDetection(equip.hitBox, hitBox)==false then
+            plr.state = 0
         end
 
         if flr(X)+200==flr(plr.X) or flr(Y)+200==flr(plr.Y) or flr(X)-200==flr(plr.X) or flr(Y)-200==flr(plr.Y) then

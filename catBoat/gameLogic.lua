@@ -18,7 +18,10 @@ function _fishSpawner()
 
 --potential locations for a fish in the Y axis
         fishY = {
-            cam.Y-8-(flr(rnd(101))), cam.Y+127+(flr(rnd(101))), plr.Y+(rnd(fishRandSign)*flr(rnd(101))), plr.Y+(rnd(fishRandSign)*flr(rnd(101)))
+            cam.Y-8-(flr(rnd(101))),
+            cam.Y+127+(flr(rnd(101))),
+            plr.Y+(rnd(fishRandSign)*flr(rnd(101))),
+            plr.Y+(rnd(fishRandSign)*flr(rnd(101)))
         }
 
         fishGenY = rnd(fishY)
@@ -44,6 +47,7 @@ function _fishSpawner()
 end
 
 function _collisionDetection(collidingBox, receivingBox)
+--defining the boxes X and Y variables
     X1 = collidingBox[1]
     Y1 = collidingBox[3]
     X2 = collidingBox[2]
@@ -62,4 +66,8 @@ function _collisionDetection(collidingBox, receivingBox)
     else
         return false
     end
+end
+
+function _miniGame()
+    plr.state = 1
 end

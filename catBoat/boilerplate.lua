@@ -50,8 +50,8 @@ function _update()
     end
 
 --debug updater
-    echo()
-    echo_tbl(fishes[1])
+    echo(stat(1))
+    echo_tbl()
 end
 
 function _draw()
