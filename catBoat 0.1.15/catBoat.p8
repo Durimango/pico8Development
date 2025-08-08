@@ -1,11 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 42
 __lua__
-#include boilerplate.lua
-#include objects.lua
 #include gamelogic.lua
-
-#include debuglogic.lua
 __gfx__
 00000000bbbbbbbbbb77777bbbbbbbbbbbbbbbbbbbbbbbbb00000000000000000000000000000000000000000000000000000000000000000000000000000000
 00000000bb77bbbbb77b1b7bbbbbbbbbb7777bbbbbbbbbbb00000000000000000000000000000000000000000000000000000000000000000000000000000000
