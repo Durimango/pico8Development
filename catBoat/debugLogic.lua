@@ -11,7 +11,7 @@ end
 -- ...opt: c (text color, default: latest)
 -- ...opt: x,y (print coords)
 function print_echoes(c, x, y)
-	local cx, cy, cc = cam.X, cam.Y, 0  --pen_x, pen_y, pen_color
+	local cx, cy, cc = cam.X, cam.Y+10, 10  --pen_x, pen_y, pen_color
 
 	--set text position and color
 	cursor(x or cx, y or cy, c or cc)

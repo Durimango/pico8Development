@@ -23,12 +23,21 @@ function _init()
     })
 
 --fish debugger
-    fishTest={X=10,Y=10,}
+    fishTest={X=-55,Y=-55,}
     setmetatable(fishTest,{
     __index=fish
     })
 --fish table
     fishes = {fishTest}
+
+--original shoreline(come back to this)
+    -- originalShore={X,Y}
+    -- setmetatable(originalShore,{
+    -- __index=shore
+    -- })
+    -- originalShore:init()
+--shoreline table (come back to this)
+    --shoreLine = {originalShore}
 
 end
 
@@ -39,6 +48,12 @@ function _update()
     cam:update()
 --equipment updater
     equip:update()
+--popup updater
+    popup:update()
+--ui updater
+    ui:update()
+--shore updater
+    shore:update()
 
 --fish spawner
     _fishSpawner()
@@ -48,9 +63,15 @@ function _update()
         fish:update()
         fish:destructor()
     end
+--shoreLine table update (come back to this)
+    -- for shore in all(shoreLine) do
+    --     shore:update()
+    --     shore:destructor()
+    -- end
 
 --debug updater
-    echo(stat(1))
+    --echo(stat(1))
+    echo(plr.Y)
     echo_tbl()
 end
 
@@ -65,11 +86,19 @@ function _draw()
     for fish in all(fishes) do
         fish:draw()
     end
+--shore table draw (come back to this)
+    -- for shore in all(shoreLine) do
+    --     shore:draw()
+    -- end
+    shore:draw()
+    
 
 --player draw
     _drawOrder()
 
+    popup:draw()
 
+    ui:draw()
     
 --debugging
     --print(plr, cam.X, cam.Y)

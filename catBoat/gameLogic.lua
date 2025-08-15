@@ -14,7 +14,7 @@ function _fishSpawner()
     fishRandSign = {-1,1}
 
 
-    while #fishes < 15 do
+    while #fishes<15 do
 
 --potential locations for a fish in the Y axis
         fishY = {
@@ -40,10 +40,21 @@ function _fishSpawner()
         end
 
         add(fishes, fish:constructor({
-        Y=fishGenY,
-        X=fishGenX
+            Y=ceil(fishGenY),
+            X=ceil(fishGenX),
+            amount=ceil(rnd(3))
         }))
     end
+end
+
+function _shoreSlope(x)
+    m=1
+    y=m*-x
+    return y
+end
+
+function _shoreSpawner()
+
 end
 
 function _collisionDetection(collidingBox, receivingBox)
@@ -66,8 +77,4 @@ function _collisionDetection(collidingBox, receivingBox)
     else
         return false
     end
-end
-
-function _miniGame()
-    plr.state = 1
 end
